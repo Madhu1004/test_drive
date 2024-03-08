@@ -22,7 +22,7 @@ class _NavBarState extends State<NavBar> {
     // Define what you want to do when 'Home' is tapped
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const HomeRoute()),
+      MaterialPageRoute(builder: (context) => const Home()),
     );
   }
 
@@ -105,14 +105,15 @@ class _MyProfileRouteState extends State<MyProfileRoute> {
 }
 
 
-class HomeRoute extends StatefulWidget {
-  const HomeRoute({super.key});
+class Home extends StatefulWidget {
+  const Home({super.key});
+
 
   @override
-  State<HomeRoute> createState() => _HomeRouteState();
+  State<Home> createState() => _HomeState();
 }
 
-class _HomeRouteState extends State<HomeRoute> {
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
