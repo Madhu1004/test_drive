@@ -328,7 +328,62 @@ class SettingsThemesState extends State<SettingsThemes> {
                     ),
                   ),
             const SizedBox(height: 10),
-    ],
+
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.indigoAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.indigoAccent;
+                      });
+                    },
+                    child: const Text(
+                      'Indigo',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.yellow,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.yellow;
+                      });
+                    },
+                    child: const Text(
+                      'Yellow',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.brown;
+                      });
+                    },
+                    child: const Text(
+                      'Brown',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+        ],
     ),
     ),
     ),
