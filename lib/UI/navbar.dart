@@ -195,16 +195,52 @@ class _HomeState extends State<Home> {
 
 
 //Settings
+
 class SettingsThemes extends StatefulWidget {
-  const SettingsThemes({super.key});
+  const SettingsThemes({Key? key});
 
   @override
   State<SettingsThemes> createState() => SettingsThemesState();
 }
 
 class SettingsThemesState extends State<SettingsThemes> {
+  final Map<Color, String> _colorNames = {
+    Colors.red: 'Red',
+    Colors.blue: 'Blue',
+    Colors.orange: 'Orange',
+    Colors.green: 'Green',
+    Colors.pink: 'Pink',
+    Colors.purpleAccent: 'Purple',
+    Colors.cyan: 'Cyan',
+    Colors.indigoAccent: 'Indigo',
+    Colors.yellow: 'Yellow',
+    Colors.brown: 'Brown',
+    Colors.grey :'grey',
+  };
 
-
+  Widget _buildColorButton(Color color) {
+    String name = _colorNames[color] ?? "Unknown"; // Get the color name from the map
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+      onPressed: () {
+        setState(() {
+          Provider.of<AppTheme>(context, listen: false).appBarColor = color;
+        });
+      },
+      child: Text(
+        name,
+        style: TextStyle(color: Colors.white),
+      ),
+    ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -216,209 +252,27 @@ class SettingsThemesState extends State<SettingsThemes> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-            icon: const Icon(Icons.arrow_back_ios_new),
-          ),
-      title: const Text('Change Themes'),
+          icon: const Icon(Icons.arrow_back_ios_new),
+        ),
+        title: const Text('Change Themes'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              color: Colors.grey[200],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: ListView(
+                children: _colorNames.keys
+                    .map((color) => _buildColorButton(color))
+                    .toList(),
               ),
-              padding: const EdgeInsets.all(16.0),
-            child: ListView(
-                children: [
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  ),
-                  onPressed: () {
-                  setState(() {
-                    Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.red;
-                  });
-                  },
-                  child: const Text(
-                    'Red',
-                    style: TextStyle(color: Colors.white),
-                    ),
-                    ),
-              const SizedBox(height: 10),
-                 ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      ),
-                      onPressed: () {
-                      setState(() {
-                        Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.blue;
-                      });
-                      },
-                      child: const Text(
-                      'Blue',
-                      style: TextStyle(color: Colors.white),
-                      ),
-                      ),
-            const SizedBox(height: 10),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      ),
-                      onPressed: () {
-                      setState(() {
-                        Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.orange;
-                      });
-                      },
-                      child: const Text(
-                      'Orange',
-                      style: TextStyle(color: Colors.white),
-                      ),
-                      ),
-            const SizedBox(height: 10),
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    ),
-                    onPressed: () {
-                    setState(() {
-                      Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.green;
-                    });
-                    },
-                    child: const Text(
-                    'Green',
-                    style: TextStyle(color: Colors.white),
-                    ),
-                    ),
-            const SizedBox(height: 10),
-
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.pink,
-                    shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    ),
-                    onPressed: () {
-                    setState(() {
-                      Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.pink;
-                    });
-                    },
-                    child: const Text(
-                    'Pink',
-                    style: TextStyle(color: Colors.white),
-                    ),
-                    ),
-            const SizedBox(height: 10),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purpleAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.purpleAccent;
-                    });
-                  },
-                  child: const Text(
-                    'Purple',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-             const SizedBox(height: 10),
-                 ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.cyan,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.cyan;
-                      });
-                    },
-                    child: const Text(
-                      'Cyan',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-            const SizedBox(height: 10),
-
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.indigoAccent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.indigoAccent;
-                      });
-                    },
-                    child: const Text(
-                      'Indigo',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.yellow,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.yellow;
-                      });
-                    },
-                    child: const Text(
-                      'Yellow',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.brown,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        Provider.of<AppTheme>(context, listen: false).appBarColor = Colors.brown;
-                      });
-                    },
-                    child: const Text(
-                      'Brown',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-        ],
-    ),
-    ),
-    ),
+            ),
+          ],
+        ),
+      ),
     );
-
   }
 }
+
 
