@@ -1,17 +1,46 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class AppTheme extends ChangeNotifier{
+class AppTheme extends ChangeNotifier {
   Color _appBarColor = Colors.deepPurple;
+  final String _themeKey = 'selectedThemeColor';
+
+  AppTheme() {
+    _loadThemeColor(); // Ensure that theme color is loaded when AppTheme is initialized
+  }
 
   Color get appBarColor => _appBarColor;
 
   set appBarColor(Color newColor) {
     _appBarColor = newColor;
+    _saveThemeColor(newColor);
     notifyListeners();
   }
+
+  Future<void> _loadThemeColor() async {
+    final prefs = await SharedPreferences.getInstance();
+      print('Loading theme color...');
+    if (prefs.containsKey(_themeKey)) {
+      final colorValue = prefs.getInt(_themeKey);
+      if (colorValue != null) {
+          print('Theme color loaded: $colorValue');
+        _appBarColor = Color(colorValue);
+        notifyListeners();
+      }
+    } else {
+        print('Theme color not found in SharedPreferences.');
+    }
+  }
+
+  Future<void> _saveThemeColor(Color color) async {
+    final prefs = await SharedPreferences.getInstance();
+    print('Saving theme color: ${color.value}');
+    prefs.setInt(_themeKey, color.value);
+  }
 }
+
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -46,6 +75,8 @@ class _NavBarState extends State<NavBar> {
       MaterialPageRoute(builder: (context) => const SettingsThemes()),
     );
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -198,8 +229,7 @@ class SettingsThemesState extends State<SettingsThemes> {
               color: Colors.grey[200],
               ),
               padding: const EdgeInsets.all(16.0),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: ListView(
                 children: [
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
