@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class AppTheme extends ChangeNotifier {
   Color _appBarColor = Colors.deepPurple;
@@ -56,7 +59,7 @@ class _NavBarState extends State<NavBar> {
     // Define what you want to do when 'Home' is tapped
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const Home()),
+      MaterialPageRoute(builder: (context) => const HomeDrawer()),
     );
   }
 
@@ -150,41 +153,101 @@ class _MyProfileRouteState extends State<MyProfileRoute> {
 }
 
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class HomeDrawer extends StatefulWidget {
+  const HomeDrawer({super.key});
 
 
   @override
-  State<Home> createState() => _HomeState();
+  State<HomeDrawer> createState() => _HomeDrawerState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeDrawerState extends State<HomeDrawer> {
+  final List<String> imageUrls = [
+    'https://media.istockphoto.com/id/1494104649/photo/ai-chatbot-artificial-intelligence-digital-concept.jpg?s=2048x2048&w=is&k=20&c=AwtJ4gMG5S2ryVd6pYeiWm2lD10-Lr593yhZDtrK4fs=',
+    'https://live.staticflickr.com/2864/33474116474_3feb580e0c_c.jpg',
+    'https://media.istockphoto.com/id/1467350162/photo/business-performance-checklist-concept-businessman-using-laptop-doing-online-checklist-survey.jpg?s=2048x2048&w=is&k=20&c=calAin-_yCPVSUGM9z22uBIrVjYMjEkPbhgZ56opXqY=',
+  ];
+
+  late PageController _pageController;
+  int _currentIndex = 0;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentIndex);
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (_currentIndex < imageUrls.length - 1) {
+        _currentIndex++;
+      } else {
+        _currentIndex = 0;
+      }
+      _pageController.animateToPage(
+        _currentIndex,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Provider.of<AppTheme>(context).appBarColor,
-        leading: IconButton(onPressed: () {
-          Navigator.of(context).pop(); },
-          icon: const Icon(Icons.arrow_back_ios_new), ),
-        title: const Text('Home'),
-
+        title: const Text('Home Page'),
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
+      body: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          if (details.primaryVelocity! > 0 && _currentIndex > 0) {
+            setState(() {
+              _currentIndex--;
+              _pageController.previousPage(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.ease,
+              );
+            });
+          } else if (details.primaryVelocity! < 0 && _currentIndex < imageUrls.length - 1) {
+            setState(() {
+              _currentIndex++;
+              _pageController.nextPage(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.ease,
+              );
+            });
+          }
+        },
+        child: PageView.builder(
+          controller: _pageController,
+          itemCount: imageUrls.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
           },
-          child: const Text('Back'),
+          itemBuilder: (context, index) {
+            return CachedNetworkImage(
+              imageUrl: imageUrls[index],
+              placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+            );
+          },
         ),
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _timer.cancel();
+    super.dispose();
+  }
 }
-
-
 
 //Settings
 
@@ -209,6 +272,8 @@ class SettingsThemesState extends State<SettingsThemes> {
     Colors.brown: 'Brown',
     Colors.grey :'grey',
   };
+
+
 
   Widget _buildColorButton(Color color) {
     String name = _colorNames[color] ?? "Unknown"; // Get the color name from the map
