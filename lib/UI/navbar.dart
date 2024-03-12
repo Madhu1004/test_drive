@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,7 +7,7 @@ class AppTheme extends ChangeNotifier {
   final String _themeKey = 'selectedThemeColor';
 
   AppTheme() {
-    _loadThemeColor(); // Ensure that theme color is loaded when AppTheme is initialized
+    _loadThemeColor();
   }
 
   Color get appBarColor => _appBarColor;
@@ -19,25 +18,18 @@ class AppTheme extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _loadThemeColor() async {
-    final prefs = await SharedPreferences.getInstance();
-      print('Loading theme color...');
-    if (prefs.containsKey(_themeKey)) {
-      final colorValue = prefs.getInt(_themeKey);
-      if (colorValue != null) {
-          print('Theme color loaded: $colorValue');
-        _appBarColor = Color(colorValue);
-        notifyListeners();
-      }
-    } else {
-        print('Theme color not found in SharedPreferences.');
+  void _loadThemeColor() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? colorValue = prefs.getString(_themeKey);
+    if (colorValue != null) {
+      _appBarColor = Color(int.parse(colorValue));
+      notifyListeners();
     }
   }
 
-  Future<void> _saveThemeColor(Color color) async {
-    final prefs = await SharedPreferences.getInstance();
-    print('Saving theme color: ${color.value}');
-    prefs.setInt(_themeKey, color.value);
+  void _saveThemeColor(Color color) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_themeKey, color.value.toString());
   }
 }
 
@@ -86,19 +78,19 @@ class _NavBarState extends State<NavBar> {
         padding: EdgeInsets.zero,
         children: [
           Consumer<AppTheme>(builder: (context, appTheme,_) =>
-         UserAccountsDrawerHeader(
-            accountName: const Text('My profile'),
-            accountEmail: const Text('myprofile@gmail.com'),
-            currentAccountPicture: const ClipOval(
-              child: Image(
-                image: NetworkImage(
-                  'https://static.vecteezy.com/system/resources/previews/021/688/192/original/close-up-portrait-of-muslim-male-character-wearing-keffiyeh-kufiya-round-circle-avatar-icon-for-social-media-user-profile-website-app-line-cartoon-style-illustration-vector.jpg',
+              UserAccountsDrawerHeader(
+                accountName: const Text('My profile'),
+                accountEmail: const Text('myprofile@gmail.com'),
+                currentAccountPicture: const ClipOval(
+                  child: Image(
+                    image: NetworkImage(
+                      'https://static.vecteezy.com/system/resources/previews/021/688/192/original/close-up-portrait-of-muslim-male-character-wearing-keffiyeh-kufiya-round-circle-avatar-icon-for-social-media-user-profile-website-app-line-cartoon-style-illustration-vector.jpg',
+                    ),
+                  ),
                 ),
+                decoration: BoxDecoration(
+                  color: appTheme.appBarColor,),
               ),
-            ),
-            decoration: BoxDecoration(
-              color: appTheme.appBarColor,),
-          ),
           ),
 
           ListTile(
@@ -223,22 +215,22 @@ class SettingsThemesState extends State<SettingsThemes> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        onPressed: () {
+          setState(() {
+            Provider.of<AppTheme>(context, listen: false).appBarColor = color;
+          });
+        },
+        child: Text(
+          name,
+          style: TextStyle(color: Colors.white),
         ),
       ),
-      onPressed: () {
-        setState(() {
-          Provider.of<AppTheme>(context, listen: false).appBarColor = color;
-        });
-      },
-      child: Text(
-        name,
-        style: TextStyle(color: Colors.white),
-      ),
-    ),
     );
   }
 
@@ -274,5 +266,3 @@ class SettingsThemesState extends State<SettingsThemes> {
     );
   }
 }
-
-
