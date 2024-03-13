@@ -1,13 +1,18 @@
 import 'dart:async';
-
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'dart:convert';
+
+
 class AppTheme extends ChangeNotifier {
   Color _appBarColor = Colors.deepPurple;
-  final String _themeKey = 'selectedThemeColor';
+  final String _fileName = 'theme_data.json';
 
   AppTheme() {
     _loadThemeColor();
@@ -21,22 +26,52 @@ class AppTheme extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _loadThemeColor() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? colorValue = prefs.getString(_themeKey);
-    if (colorValue != null) {
-      _appBarColor = Color(int.parse(colorValue));
-      notifyListeners();
+  Future<void> _loadThemeColor() async {
+    try {
+      if (kIsWeb) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        int? colorValue = prefs.getInt('appBarColor');
+        if (colorValue != null) {
+          _appBarColor = Color(colorValue);
+          notifyListeners();
+        }
+      } else {
+        File file = await _getLocalFile();
+        if (await file.exists()) {
+          String content = await file.readAsString();
+          Map<String, dynamic> data = jsonDecode(content);
+          if (data.containsKey('appBarColor')) {
+            _appBarColor = Color(data['appBarColor']);
+            notifyListeners();
+          }
+        }
+      }
+    } catch (e) {
+      print('Error loading theme color: $e');
     }
   }
 
-  void _saveThemeColor(Color color) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themeKey, color.value.toString());
+  Future<void> _saveThemeColor(Color color) async {
+    try {
+      if (kIsWeb) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('appBarColor', color.value);
+      } else {
+        File file = await _getLocalFile();
+        Map<String, dynamic> data = {'appBarColor': color.value};
+        String jsonString = jsonEncode(data);
+        await file.writeAsString(jsonString);
+      }
+    } catch (e) {
+      print('Error saving theme color: $e');
+    }
+  }
+
+  Future<File> _getLocalFile() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return File('${directory.path}/$_fileName');
   }
 }
-
-
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
 
@@ -252,7 +287,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
 //Settings
 
 class SettingsThemes extends StatefulWidget {
-  const SettingsThemes({Key? key});
+  const SettingsThemes({super.key});
 
   @override
   State<SettingsThemes> createState() => SettingsThemesState();
